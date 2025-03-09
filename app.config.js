@@ -35,7 +35,10 @@ module.exports = {
     supabaseUrl: SUPABASE_URL,
     supabaseAnonKey: SUPABASE_ANON_KEY,
     deepseekApiKey: DEEPSEEK_API_KEY,
-    huggingFaceApiKey: HUGGINGFACE_API_KEY
+    huggingFaceApiKey: HUGGINGFACE_API_KEY,
+    eas: {
+      projectId: "f25f866b-0c97-4e87-9cf9-29300b0cb500"
+    }
   },
   experiments: {
     tsconfigPaths: true
