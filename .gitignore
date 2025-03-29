@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 .env
+env.js
+package-lock.json
+package.json
 # Expo
 .expo/
 dist/

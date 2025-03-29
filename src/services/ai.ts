@@ -46,9 +46,9 @@ Respond with only one word: HIGH, MEDIUM, or LOW
       {
         inputs: prompt,
         parameters: {
-          max_new_tokens: 10,
+          max_new_tokens: 400,
           temperature: 0.1,
-          return_full_text: false,
+          return_full_text: true,
         },
       },
       {
@@ -98,10 +98,17 @@ function getPriorityFromDueDate(dueDate: Date): TaskPriority {
 }
 
 // Get AI response for task suggestions
-export const getAIResponse = async (messages: Message[]): Promise<string> => {
+export const getAIResponse = async (messages: Message[], tasks: TaskPriorityInput[]): Promise<string> => {
   try {
+    // Format tasks into a structured prompt
+    const taskContext = tasks.length > 0 
+      ? `Here are your current tasks:\n` + tasks.map(
+          (task, index) => `${index + 1}. ${task.title} - ${task.description || 'No description provided'}` 
+        ).join('\n')
+      : 'You have no tasks at the moment.';
+
     const relevantMessages = [
-      { role: 'system', content: 'You are a helpful AI assistant for task and productivity management. Keep your responses concise and focused on helping users manage their tasks and time effectively.' },
+      { role: 'system', content: `You are a helpful AI assistant for task and productivity management. Keep your responses concise and focused on helping users manage their tasks and time effectively. ${taskContext}` },
       messages[messages.length - 1]
     ];
 
@@ -133,11 +140,11 @@ export const getAIResponse = async (messages: Message[]): Promise<string> => {
     throw new Error('Invalid response format from API');
   } catch (error: any) {
     console.error('AI Service Error:', error.response || error);
-    
+
     if (error.response?.status === 429) {
       throw new Error('The AI service is currently busy. Please try again in a few seconds.');
     }
-    
+
     if (error.response?.status === 401) {
       throw new Error('Invalid API token. Please check your API configuration.');
     }
@@ -145,6 +152,8 @@ export const getAIResponse = async (messages: Message[]): Promise<string> => {
     throw new Error(error.message || 'Failed to get AI response');
   }
 };
+
+
 
 // API key management
 export async function saveApiKey(apiKey: string): Promise<void> {
